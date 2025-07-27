@@ -4,8 +4,11 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Livewire\Volt\Component;
 use Mary\Traits\Toast;
-
+use Illuminate\Database\Eloquent\Builder;
+use Livewire\WithPagination;
+use Illuminate\Pagination\LengthAwarePaginator; 
 new class extends Component {
+    use WithPagination;
     use Toast;
 
     public string $search = '';
@@ -14,12 +17,13 @@ new class extends Component {
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
 
-    // Clear filters
-    public function clear(): void
-    {
-        $this->reset();
-        $this->success('Filters cleared.', position: 'toast-bottom');
-    }
+// Clear filters
+public function clear(): void
+{
+    $this->reset();
+    $this->resetPage(); 
+    $this->success('Filters cleared.', position: 'toast-bottom');
+}
 
     // Delete action
     public function delete($id): void
@@ -33,29 +37,31 @@ new class extends Component {
         return [
             ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
             ['key' => 'name', 'label' => 'Name', 'class' => 'w-64'],
-            ['key' => 'age', 'label' => 'Age', 'class' => 'w-20'],
+            ['key' => 'country_name', 'label' => 'Country'],
             ['key' => 'email', 'label' => 'E-mail', 'sortable' => false],
         ];
     }
-
+// Reset pagination when any component property changes
+public function updated($property): void
+{
+    if (! is_array($property) && $property != "") {
+        $this->resetPage();
+    }
+}
     /**
      * For demo purpose, this is a static collection.
      *
      * On real projects you do it with Eloquent collections.
      * Please, refer to maryUI docs to see the eloquent examples.
      */
-    public function users(): Collection
-    {
-        return collect([
-            ['id' => 1, 'name' => 'Mary', 'email' => 'mary@mary-ui.com', 'age' => 23],
-            ['id' => 2, 'name' => 'Giovanna', 'email' => 'giovanna@mary-ui.com', 'age' => 7],
-            ['id' => 3, 'name' => 'Marina', 'email' => 'marina@mary-ui.com', 'age' => 5],
-        ])
-            ->sortBy([[...array_values($this->sortBy)]])
-            ->when($this->search, function (Collection $collection) {
-                return $collection->filter(fn(array $item) => str($item['name'])->contains($this->search, true));
-            });
-    }
+public function users(): LengthAwarePaginator 
+{
+    return User::query()
+        ->withAggregate('country', 'name')
+        ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
+        ->orderBy(...array_values($this->sortBy))
+        ->paginate(5); // No more `->get()`  
+}
 
     public function with(): array
     {
@@ -64,6 +70,7 @@ new class extends Component {
             'headers' => $this->headers()
         ];
     }
+    
 }; ?>
 
 <div>
@@ -79,7 +86,7 @@ new class extends Component {
 
     <!-- TABLE  -->
     <x-card shadow>
-        <x-table :headers="$headers" :rows="$users" :sort-by="$sortBy">
+        <x-table :headers="$headers" :rows="$users" :sort-by="$sortBy" with-pagination>
             @scope('actions', $user)
             <x-button icon="o-trash" wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner class="btn-ghost btn-sm text-error" />
             @endscope
