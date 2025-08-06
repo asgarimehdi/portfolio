@@ -24,6 +24,7 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd /var/www/html/portfolio/
+            git stash
             git pull origin main
             php artisan migrate:fresh --seed
 
