@@ -91,6 +91,7 @@ new class extends Component {
         <x-slot:actions>
             <x-button label="Filters" @click="$wire.drawer = true" responsive icon="o-funnel"/>
             <x-button label="Create" link="/users/create" responsive icon="o-plus" class="btn-primary" />
+            <x-button label="Search" @click.stop="$dispatch('mary-search-open')" />
         </x-slot:actions>
     </x-header>
 
