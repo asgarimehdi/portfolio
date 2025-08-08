@@ -33,6 +33,10 @@ new class extends Component {
     #[Rule('required')]
     public array $my_languages = [];
 
+    // Optional
+    #[Rule('sometimes')]
+    public ?string $bio = null;
+
     // We also need this to fill Countries combobox and Available Languages
     public function with(): array
     {
@@ -85,6 +89,9 @@ new class extends Component {
                     wire:model="my_languages"
                     :options="$languages"
                     searchable />
+
+                <x-editor wire:model="bio" label="Biography" hint="The great biography" />
+
                 <x-slot:actions>
                     <x-button label="Cancel" link="/users"/>
                     {{-- The important thing here is `type="submit"` --}}
@@ -1294,3 +1301,4 @@ new class extends Component {
             </svg>
         </div>
     </div>
+</div>

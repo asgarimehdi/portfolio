@@ -7,7 +7,8 @@
     <title>{{ isset($title) ? $title.' - '.config('app.name') : config('app.name') }}</title>
     <link rel="stylesheet" href="{{ asset('css/cropper.min.css') }}"/>
 
-
+    {{-- TinyMCE --}}
+    <script src="{{ asset('js/tinymce.min.js') }}"  referrerpolicy="origin" defer ></script>
     <script src="{{ asset('js/cropper.min.js') }}" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
