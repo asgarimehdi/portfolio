@@ -90,7 +90,7 @@ new class extends Component {
                     :options="$languages"
                     searchable />
 
-{{--                <x-editor wire:model="bio" label="Biography" hint="The great biography" />--}}
+                <x-editor wire:model="bio" label="Biography" hint="The great biography" />
 
                 <x-slot:actions>
                     <x-button label="Cancel" link="/users"/>
@@ -1299,6 +1299,7 @@ new class extends Component {
                     </filter>
                 </defs>
             </svg>
+
         </div>
     </div>
 </div>
